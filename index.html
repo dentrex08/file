@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A Question for Manya</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Dancing+Script:wght@400..700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Playfair Display', serif;
+            background: linear-gradient(to bottom, #1A1A2E, #0F001A);
+            overflow: hidden;
+            touch-action: none; /* Prevent double-tap zoom on mobile */
+        }
+        .star {
+            position: absolute;
+            background-color: #ffffff;
+            border-radius: 50%;
+            opacity: 0;
+            animation: twinkle 5s infinite;
+        }
+        @keyframes twinkle {
+            0%, 100% {
+                opacity: 0;
+                transform: scale(0.5);
+            }
+            50% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+        .royal-gold-bg { background-color: #FFD700; }
+        .royal-red-bg { background-color: #8B0000; }
+        .royal-gold-text { color: #FFD700; }
+        .rosalinda-font { font-family: 'Dancing Script', cursive; }
+        
+        #preloader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #fff;
+            font-size: 2rem;
+            z-index: 100;
+            opacity: 1;
+            transition: opacity 1s ease-in-out;
+        }
+        #preloader.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+        #envelope-wrapper {
+            position: relative;
+            transform-style: preserve-3d;
+            perspective: 1000px;
+            cursor: pointer;
+            width: 20rem;
+            height: 12rem;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4);
+        }
+        #envelope-body {
+            background-color: #FFD700;
+            width: 100%;
+            height: 100%;
+            position: relative;
+            z-index: 10;
+        }
+        .flap {
+            position: absolute;
+            width: 100%;
+            height: 50%;
+            background-color: #DAB88C;
+            transform-origin: bottom;
+            transform: rotateX(0deg);
+            transition: transform 0.5s ease-in-out;
+            z-index: 20;
+        }
+        .top-flap {
+            top: 0;
+            border-radius: 0 0 10px 10px;
+            transform-origin: top;
+        }
+        .right-flap, .left-flap {
+            width: 50%;
+            height: 100%;
+            top: 0;
+            z-index: 10;
+            transition: transform 0.5s ease-in-out;
+        }
+        .right-flap {
+            right: 0;
+            transform-origin: right;
+            border-radius: 10px 0 0 10px;
+        }
+        .left-flap {
+            left: 0;
+            transform-origin: left;
+            border-radius: 0 10px 10px 0;
+        }
+        #sticker {
+            position: absolute;
+            width: 2rem;
+            height: 2rem;
+            background-color: #C85A5A;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            top: 45%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 30;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            font-size: 1rem;
+            color: white;
+            opacity: 1;
+            transition: opacity 0.5s ease-in-out;
+        }
+        #inner-letter {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 90%;
+            height: 90%;
+            background-color: #F8F4E3;
+            z-index: 10;
+            transform: translate(-50%, 0) scale(0);
+            transition: transform 0.8s cubic-bezier(0.68, -0.55, 0.27, 1.55); /* Bounce effect */
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            padding: 2rem;
+            border-radius: 8px;
+            transform-origin: top;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            overflow: hidden;
+            color: black;
+        }
+        .letter-pop {
+            transform: translate(-50%, -100%) scale(1) !important;
+        }
+        .unfold-top, .unfold-bottom {
+            position: absolute;
+            width: 100%;
+            height: 50%;
+            background-color: #F8F4E3;
+            transform-origin: top center;
+            transition: transform 0.6s ease-in-out;
+            backface-visibility: hidden;
+        }
+        .unfold-bottom {
+            top: 50%;
+            transform-origin: bottom center;
+        }
+        .unfold-top-folded { transform: rotateX(180deg); }
+        .unfold-bottom-folded { transform: rotateX(-180deg); }
+        .paper-bg {
+            background-color: rgb(245, 245, 220);
+            color: black;
+            padding: 2rem;
+            border-radius: 1rem;
+            box-shadow: 
+                0 0 10px rgba(0, 0, 0, 0.05),
+                0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        .glow-yes {
+            box-shadow: 0 0 10px #f05a5e, 0 0 20px #f05a5e, 0 0 30px #f05a5e, inset 0 0 10px #f05a5e;
+            transition: all 0.3s ease-in-out;
+        }
+        .glow-no {
+            box-shadow: 0 0 10px #9f7aea, 0 0 20px #9f7aea, 0 0 30px #9f7aea, inset 0 0 10px #9f7aea;
+            transition: all 0.3s ease-in-out;
+        }
+        .glow-yes:hover, .glow-no:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px #f05a5e, 0 0 30px #f05a5e, 0 0 40px #f05a5e, inset 0 0 20px #f05a5e;
+        }
+        .glow-no:hover {
+            box-shadow: 0 0 20px #9f7aea, 0 0 30px #9f7aea, 0 0 40px #9f7aea, inset 0 0 20px #9f7aea;
+        }
+        .ask-container {
+            background-color: #f5f5f5;
+            padding: 2rem;
+            border-radius: 1rem;
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.5), 0 0 25px rgba(255, 255, 255, 0.3);
+            transition: box-shadow 0.5s ease-in-out;
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen p-4">
+
+    <div id="stars-container" class="fixed inset-0 pointer-events-none z-0"></div>
+    <div id="preloader">
+        <p>Loading...</p>
+    </div>
+
+    <main class="w-full max-w-lg mx-auto text-center relative z-10">
+
+        <div id="loveLetterWrapper" class="space-y-8 flex flex-col items-center justify-center transition-opacity duration-1000 ease-in-out">
+            <div id="envelope-wrapper">
+                <div id="envelope-body">
+                    <div class="flap top-flap"></div>
+                    <div class="flap right-flap"></div>
+                    <div class="flap left-flap"></div>
+                    <div id="sticker">
+                        <span class="text-white font-bold text-xl select-none">❤️</span>
+                    </div>
+                </div>
+                <div id="inner-letter">
+                    <div id="letter-content-front" class="h-full w-full flex items-center justify-center p-4">
+                        <p class="text-2xl font-semibold rosalinda-font">Tap to open</p>
+                    </div>
+                    <div id="letter-content-back" class="h-full w-full hidden items-center justify-center p-4">
+                        <p class="text-2xl font-semibold rosalinda-font"></p>
+                    </div>
+                    <div class="unfold-top absolute top-0 w-full h-1/2 bg-white transform-origin-top transition-transform duration-500 ease-in-out"></div>
+                    <div class="unfold-bottom absolute bottom-0 w-full h-1/2 bg-white transform-origin-bottom transition-transform duration-500 ease-in-out"></div>
+                </div>
+            </div>
+            <p id="instruction" class="text-sm md:text-base text-gray-200 mt-2">Tap the envelope to begin.</p>
+        </div>
+
+        <div id="page1" class="hidden space-y-8 transition-opacity duration-1000 ease-in-out p-8 rounded-2xl shadow-2xl paper-bg">
+            <h1 class="text-4xl md:text-5xl font-bold text-black animate-fade-in-down">THE END
+            </h1>
+            <div class="text-xl md:text-2xl text-black space-y-4 leading-relaxed rosalinda-font">
+                <p>the end</p>
+            </div>
+            <button id="generateReasonsButton" aria-label="My Favorite Things About You" class="bg-[#C89689] text-white font-bold py-3 px-8 rounded-full shadow-lg transform transition-transform duration-300 hover:scale-105 focus:outline-none focus:ring-4 focus:ring-[#C89689]">
+                My Favorite Things About You
+            </button>
+            <div id="reasonsContainer" class="text-center text-black mt-4 text-sm italic"></div>
+            <button id="askButton" aria-label="Will you be my girlfriend?" class="bg-[#C89689] text-white font-bold py-3 px-8 rounded-full shadow-lg transform transition-transform duration-300 hover:scale-105 focus:outline-none focus:ring-4 focus:ring-[#C89689]">
+                Will you be my girlfriend?
+            </button>
+        </div>
+
+        <div id="page2" class="hidden space-y-8 transition-opacity duration-1000 ease-in-out ask-container">
+            <h2 class="text-4xl md:text-5xl font-bold text-stone-800">So, what do you say?</h2>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <button id="yesButton" aria-label="Yes" class="bg-stone-500 text-white font-bold py-4 px-10 rounded-full shadow-lg transform transition-transform duration-300 focus:outline-none text-2xl glow-yes">
+                    Yes
+                </button>
+                <button id="noButton" aria-label="No" class="bg-stone-500 text-white font-bold py-4 px-10 rounded-full shadow-lg transform transition-transform duration-300 focus:outline-none text-2xl glow-no">
+                    No
+                </button>
+            </div>
+        </div>
+
+    </main>
+
+    <div id="messageBox" class="hidden fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-2xl shadow-2xl p-8 text-center max-w-sm w-full">
+            <p id="messageText" class="text-2xl font-semibold text-gray-800 mb-6"></p>
+            <button id="closeButton" class="royal-red-bg text-white font-bold py-2 px-6 rounded-full focus:outline-none focus:ring-4 focus:ring-red-300">Close</button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const preloader = document.getElementById('preloader');
+            const starsContainer = document.getElementById('stars-container');
+
+            // Create starry background
+            for (let i = 0; i < 150; i++) {
+                const star = document.createElement('div');
+                star.classList.add('star');
+                const size = Math.random() * 3 + 1;
+                star.style.width = `${size}px`;
+                star.style.height = `${size}px`;
+                star.style.top = `${Math.random() * 100}vh`;
+                star.style.left = `${Math.random() * 100}vw`;
+                star.style.animationDelay = `${Math.random() * 5}s`;
+                starsContainer.appendChild(star);
+            }
+
+            // Hide preloader once content is ready
+            preloader.classList.add('hidden');
+        });
+
+        const envelopeWrapper = document.getElementById('envelope-wrapper');
+        const topFlap = document.querySelector('.top-flap');
+        const rightFlap = document.querySelector('.right-flap');
+        const leftFlap = document.querySelector('.left-flap');
+        const sticker = document.getElementById('sticker');
+        const instruction = document.getElementById('instruction');
+        const loveLetterWrapper = document.getElementById('loveLetterWrapper');
+        const page1 = document.getElementById('page1');
+        const page2 = document.getElementById('page2');
+        const askButton = document.getElementById('askButton');
+        const yesButton = document.getElementById('yesButton');
+        const noButton = document.getElementById('noButton');
+        const messageBox = document.getElementById('messageBox');
+        const messageText = document.getElementById('messageText');
+        const closeButton = document.getElementById('closeButton');
+        const innerLetter = document.getElementById('inner-letter');
+        const letterContentFront = document.getElementById('letter-content-front');
+        const letterContentBack = document.getElementById('letter-content-back');
+        const unfoldTop = document.querySelector('.unfold-top');
+        const unfoldBottom = document.querySelector('.unfold-bottom');
+        const generateReasonsButton = document.getElementById('generateReasonsButton');
+        const reasonsContainer = document.getElementById('reasonsContainer');
+
+        let step = 0;
+        let isAnimating = false;
+
+        envelopeWrapper.addEventListener('click', () => {
+            if (isAnimating) return;
+            isAnimating = true;
+
+            step++;
+            if (step === 1) {
+                topFlap.style.transform = 'rotateX(180deg)';
+                rightFlap.style.transform = 'rotateY(180deg)';
+                leftFlap.style.transform = 'rotateY(-180deg)';
+                sticker.style.opacity = '0';
+                setTimeout(() => {
+                    innerLetter.classList.add('letter-pop');
+                    instruction.textContent = "It's a special letter. Tap to open it.";
+                    isAnimating = false;
+                }, 500);
+            } else if (step === 2) {
+                unfoldTop.classList.add('unfold-top-folded');
+                unfoldTop.style.zIndex = 11;
+                letterContentFront.classList.add('hidden');
+                letterContentBack.classList.remove('hidden');
+                letterContentBack.querySelector('p').textContent = "I am asking you, are you sure?";
+                instruction.textContent = "Tap again to see the full message.";
+                setTimeout(() => { isAnimating = false; }, 600);
+            } else if (step === 3) {
+                unfoldBottom.classList.add('unfold-bottom-folded');
+                unfoldBottom.style.zIndex = 11;
+                letterContentBack.querySelector('p').textContent = "Open at your own risk. This will change everything.";
+                instruction.textContent = "This is your last chance to turn back. Tap one last time.";
+                setTimeout(() => { isAnimating = false; }, 600);
+            } else if (step === 4) {
+                loveLetterWrapper.classList.add('opacity-0');
+                setTimeout(() => {
+                    loveLetterWrapper.classList.add('hidden');
+                    page1.classList.remove('hidden');
+                    setTimeout(() => page1.style.opacity = '1', 50);
+                    isAnimating = false;
+                }, 1000);
+            }
+        });
+        
+        askButton.addEventListener('click', () => {
+            page1.classList.add('opacity-0');
+            setTimeout(() => {
+                page1.classList.add('hidden');
+                page2.classList.remove('hidden');
+                setTimeout(() => page2.style.opacity = '1', 50);
+            }, 1000);
+        });
+
+        yesButton.addEventListener('click', () => {
+            messageText.textContent = "YESSS! Text me straight away!";
+            closeButton.classList.add('hidden');
+            messageBox.classList.remove('hidden');
+            setTimeout(() => {
+                window.location.href = 'https://www.instagram.com/nandanverse/';
+            }, 2500);
+        });
+        
+        noButton.addEventListener('click', () => {
+            messageText.textContent = "I knew it was too hard to resist ;)";
+            messageBox.classList.remove('hidden');
+            
+            // Randomly move the No button
+            const mainContainer = document.querySelector('main');
+            const containerRect = mainContainer.getBoundingClientRect();
+            const buttonRect = noButton.getBoundingClientRect();
+
+            let newLeft = Math.random() * (containerRect.width - buttonRect.width);
+            let newTop = Math.random() * (containerRect.height - buttonRect.height);
+
+            // Ensure the button doesn't go off screen
+            newLeft = Math.max(0, newLeft);
+            newTop = Math.max(0, newTop);
+
+            noButton.style.position = 'absolute';
+            noButton.style.left = `${newLeft}px`;
+            noButton.style.top = `${newTop}px`;
+
+            noButton.classList.remove('hidden');
+            
+            // Re-show the button after the message box is hidden
+            closeButton.addEventListener('click', () => {
+                messageBox.classList.add('hidden');
+            });
+        });
+
+        closeButton.addEventListener('click', () => {
+            messageBox.classList.add('hidden');
+        });
+
+        generateReasonsButton.addEventListener('click', async () => {
+            generateReasonsButton.disabled = true;
+            reasonsContainer.classList.remove('italic');
+            reasonsContainer.style.textAlign = 'left';
+            reasonsContainer.style.marginLeft = 'auto';
+            reasonsContainer.style.marginRight = 'auto';
+            reasonsContainer.style.maxWidth = '250px';
+
+            reasonsContainer.innerHTML = `
+                <ul class="list-disc list-inside space-y-2">
+                    <li>1- Tumhare nautankiyan jese baat manwane ke liye headache aa jana</li>
+                    <li>2- Your innocense</li>
+                </ul>
+                <p class="mt-4">...baki baad mein batate hai abhi mood nhi</p>
+            `;
+            generateReasonsButton.disabled = false;
+        });
+    </script>
+</body>
+</html>
